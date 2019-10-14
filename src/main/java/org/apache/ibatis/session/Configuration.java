@@ -96,6 +96,12 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ *
+ * 基础配置类
+ * 用来描述config.xml文件中的标签
+ *
+ * 几乎每个字段对应着c
+ *
  * @author Clinton Begin
  */
 public class Configuration {
@@ -120,6 +126,9 @@ public class Configuration {
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
+  /**
+   * 设置超时时间,它决定驱动等待数据库响应的秒数.
+   */
   protected Integer defaultStatementTimeout;
   protected Integer defaultFetchSize;
   protected ResultSetType defaultResultSetType;

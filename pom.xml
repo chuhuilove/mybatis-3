@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>mybatis</artifactId>
-  <version>3.5.3-SNAPSHOT-CyziCuatome</version>
+  <version>3.5.3-SNAPSHOT.cyzi</version>
   <packaging>jar</packaging>
 
   <name>mybatis</name>
@@ -356,6 +356,19 @@
             <exclude>org.apache.ibatis.javassist.*</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <!-- Source attach plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 

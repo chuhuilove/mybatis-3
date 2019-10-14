@@ -25,6 +25,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
+ *
+ * xml 文件验证解析器
+ *
  * Offline entity resolver for the MyBatis DTDs.
  *
  * @author Clinton Begin
@@ -38,7 +41,16 @@ public class XMLMapperEntityResolver implements EntityResolver {
   private static final String MYBATIS_MAPPER_SYSTEM = "mybatis-3-mapper.dtd";
 
   private static final String MYBATIS_CONFIG_DTD = "org/apache/ibatis/builder/xml/mybatis-3-config.dtd";
+
+  public final String getMYBATIS_CONFIG_DTD(){
+    return MYBATIS_CONFIG_DTD;
+  }
+
   private static final String MYBATIS_MAPPER_DTD = "org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd";
+  public final String getMYBATIS_MAPPER_DTD(){
+    return MYBATIS_MAPPER_DTD;
+  }
+
 
   /**
    * Converts a public DTD into a local one.

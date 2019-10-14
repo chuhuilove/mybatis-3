@@ -40,6 +40,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
+ *
+ * 简单来讲,就是包装一下xml文件
+ *
+ * 将原始的xml文件包装成一个{@link Document },以方便后续的解析
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */

@@ -47,6 +47,10 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * xml解析类.解析mybatis-cong.xml
+ * 非Mapper.xml
+ *
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -90,18 +94,34 @@ public class XMLConfigBuilder extends BaseBuilder {
     this.parser = parser;
   }
 
+  /**
+   * 解析config.xml文件
+   * @return 返回一个用来描述 config文件中每一个元素的实体类
+   */
   public Configuration parse() {
+
+    /**
+     * 如果已经解析过了,则不能二次解析
+     */
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
-    parseConfiguration(parser.evalNode("/configuration"));
+    // 解析config.xml文件.需要获取其根节点
+    // 而config.xml的根节点就是"configuration"标签
+
+    XNode xNode = parser.evalNode("/configuration");
+    parseConfiguration(xNode);
     return configuration;
   }
 
   private void parseConfiguration(XNode root) {
     try {
       //issue #117 read properties first
+      /**
+       * 先解析"properties"节点下的元素
+       * 为什么要先解析
+       */
       propertiesElement(root.evalNode("properties"));
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
