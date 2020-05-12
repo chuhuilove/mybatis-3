@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * SPI for cache providers.
+ * 用于缓存提供程序的SPI.
  *
- * One instance of cache will be created for each namespace.
+ * 将为每个名称空间创建一个缓存实例.
  *
- * The cache implementation must have a constructor that receives the cache id as an String parameter.
+ * 缓存实现必须具有一个接收String参数作为缓存ID构造函数.
  *
- * MyBatis will pass the namespace as id to the constructor.
+ * MyBatis会将名称空间作为ID传递给构造函数.
  *
  * <pre>
  * public MyCache(final String id) {
@@ -42,7 +43,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface Cache {
 
   /**
-   * @return The identifier of this cache
+   * @return 缓存的标识符
    */
   String getId();
 

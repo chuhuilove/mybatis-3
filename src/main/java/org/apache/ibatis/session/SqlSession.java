@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2016 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.BatchResult;
 
 /**
- * The primary Java interface for working with MyBatis.
- * Through this interface you can execute commands, get mappers and manage transactions.
+ * 用于使用MyBatis的主要Java接口.
+ * 通过这个接口,您可以执行命令、获取映射器和管理事务.
  *
  * @author Clinton Begin
  */

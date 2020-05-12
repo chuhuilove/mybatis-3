@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * 实现了InvocationHandler,意味着,插件的实现,可能是走动态代理
  * @author Clinton Begin
  */
 public class Plugin implements InvocationHandler {
@@ -42,8 +43,10 @@ public class Plugin implements InvocationHandler {
 
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
+
     Class<?> type = target.getClass();
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
+
     if (interfaces.length > 0) {
       return Proxy.newProxyInstance(
           type.getClassLoader(),

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import org.apache.ibatis.session.SqlSession;
 
 /**
  *
- * The default implementation for {@link SqlSession}.
- * Note that this class is not Thread-Safe.
+ * {@link SqlSession}默认实现
+ * 注意这个类不是线程安全的.
  *
  * @author Clinton Begin
  */
@@ -73,6 +73,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <T> T selectOne(String statement, Object parameter) {
+    System.err.println("selectOne....");
     // Popular vote was to return null on 0 results and throw exception on too many.
     List<T> list = this.selectList(statement, parameter);
     if (list.size() == 1) {
@@ -96,6 +97,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
+    System.err.println("selectMap......");
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
             configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
