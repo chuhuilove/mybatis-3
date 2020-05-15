@@ -14,6 +14,6 @@
  *    limitations under the License.
  */
 /**
- * Contains the statement executors.
+ * 包含语句执行器.
  */
 package org.apache.ibatis.executor;

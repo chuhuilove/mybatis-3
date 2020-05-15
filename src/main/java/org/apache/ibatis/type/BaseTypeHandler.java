@@ -26,9 +26,9 @@ import org.apache.ibatis.session.Configuration;
 /**
  * The base {@link TypeHandler} for references a generic type.
  * <p>
- * Important: Since 3.5.0, This class never call the {@link ResultSet#wasNull()} and
- * {@link CallableStatement#wasNull()} method for handling the SQL {@code NULL} value.
- * In other words, {@code null} value handling should be performed on subclass.
+ * 重要: 从3.5.0开始,此类不再调用{@link ResultSet＃wasNull()}和
+ * {@link CallableStatement＃wasNull())}方法来处理SQL {@code NULL}值.
+ * 换句话说,{@code null}值处理应在子类上执行.
  * </p>
  *
  * @author Clinton Begin
@@ -51,8 +51,17 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     this.configuration = c;
   }
 
+  /**
+   * 实现父接口{@link TypeHandler}
+   * @param ps
+   * @param i
+   * @param parameter
+   * @param jdbcType
+   * @throws SQLException
+   */
   @Override
   public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
+
     if (parameter == null) {
       if (jdbcType == null) {
         throw new TypeException("JDBC requires that the JdbcType must be specified for all nullable parameters.");
@@ -75,6 +84,13 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
+  /**
+   * 实现父接口{@link TypeHandler}
+   * @param rs
+   * @param columnName
+   * @return
+   * @throws SQLException
+   */
   @Override
   public T getResult(ResultSet rs, String columnName) throws SQLException {
     try {
@@ -84,6 +100,13 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
+  /**
+   * 实现父接口{@link TypeHandler}
+   * @param rs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   @Override
   public T getResult(ResultSet rs, int columnIndex) throws SQLException {
     try {
@@ -93,6 +116,13 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
+  /**
+   * 实现父接口{@link TypeHandler}
+   * @param cs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   @Override
   public T getResult(CallableStatement cs, int columnIndex) throws SQLException {
     try {

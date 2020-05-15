@@ -95,6 +95,8 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * 这是用来描述mybatis中核心配置的配置类,
+ * 其中,每一个字段都对应着mybatis-config.xml中的标签
  * @author Clinton Begin
  */
 public class Configuration {
@@ -108,6 +110,9 @@ public class Configuration {
   protected boolean multipleResultSetsEnabled = true;
   protected boolean useGeneratedKeys;
   protected boolean useColumnLabel = true;
+  /**
+   * settings标签: 全局性地开启或关闭所有映射器配置文件中已配置的任何缓存.
+   */
   protected boolean cacheEnabled = true;
   protected boolean callSettersOnNulls;
   protected boolean useActualParamName = true;
@@ -119,6 +124,9 @@ public class Configuration {
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
+  /**
+   * settings标签: 设置超时时间,它决定数据库驱动等待数据库响应的秒数.
+   */
   protected Integer defaultStatementTimeout;
   protected Integer defaultFetchSize;
   protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
@@ -144,6 +152,9 @@ public class Configuration {
 
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
   protected final InterceptorChain interceptorChain = new InterceptorChain();
+  /**
+   * 类型处理器的注册器
+   */
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();

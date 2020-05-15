@@ -14,6 +14,6 @@
  *    limitations under the License.
  */
 /**
- * Base package for handing plugins.
+ * 处理插件的基础包.
  */
 package org.apache.ibatis.plugin;

@@ -25,3 +25,8 @@ Essentials
 [mybatis中文官网](https://mybatis.org/mybatis-3/zh/configuration.html)
 [mybatis-spring中文官网](http://www.mybatis.org/spring/zh/index.html)
 
+
+Mybatis运行的流程,是怎样的呢?
+
+
+
