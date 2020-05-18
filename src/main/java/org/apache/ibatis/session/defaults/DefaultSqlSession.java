@@ -93,6 +93,7 @@ public class DefaultSqlSession implements SqlSession {
   @Override
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey) {
     //statement: 方法名 com.chuhui.readsource.services.dao.ShopDao.getAllCityInfo.
+    // parameters: null,没有设置值
    // mapKey: poi_id
     return this.selectMap(statement, parameter, mapKey, RowBounds.DEFAULT);
   }
@@ -100,7 +101,9 @@ public class DefaultSqlSession implements SqlSession {
   @Override
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
     System.err.println("selectMap......");
+
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
+
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
             configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
     final DefaultResultContext<V> context = new DefaultResultContext<>();
@@ -148,6 +151,9 @@ public class DefaultSqlSession implements SqlSession {
   @Override
   public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
     try {
+      // 根据唯一方法名,从配置中获取唯一的MappedStatement对象
+      // 这个对象是在什么地方创建的呢?
+      // 看来,还是要再走一遍流程了...
       MappedStatement ms = configuration.getMappedStatement(statement);
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
     } catch (Exception e) {

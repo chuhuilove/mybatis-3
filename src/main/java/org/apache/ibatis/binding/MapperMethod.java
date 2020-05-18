@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,6 +52,9 @@ public class MapperMethod {
    * 当前方法的statementId,本方法所在的接口权限定名+"."+本方法名
    */
   private final SqlCommand command;
+  /**
+   * 方法的签名
+   */
   private final MethodSignature method;
 
   /**
@@ -84,12 +87,16 @@ public class MapperMethod {
         break;
       }
       case SELECT:
+        /**
+         * 处理select类型sql语句
+         */
         if (method.returnsVoid() && method.hasResultHandler()) {
           executeWithResultHandler(sqlSession, args);
           result = null;
         } else if (method.returnsMany()) {
           result = executeForMany(sqlSession, args);
         } else if (method.returnsMap()) {
+          // 如果返回是一个Map类型
           result = executeForMap(sqlSession, args);
         } else if (method.returnsCursor()) {
           result = executeForCursor(sqlSession, args);
@@ -203,6 +210,7 @@ public class MapperMethod {
 
   private <K, V> Map<K, V> executeForMap(SqlSession sqlSession, Object[] args) {
     Map<K, V> result;
+    // 转换参数到sql
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
       RowBounds rowBounds = method.extractRowBounds(args);
@@ -299,7 +307,10 @@ public class MapperMethod {
     private final ParamNameResolver paramNameResolver;
 
     public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
+
       Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
+
+      // 解析方法的返回类型
       if (resolvedReturnType instanceof Class<?>) {
         this.returnType = (Class<?>) resolvedReturnType;
       } else if (resolvedReturnType instanceof ParameterizedType) {
@@ -307,14 +318,22 @@ public class MapperMethod {
       } else {
         this.returnType = method.getReturnType();
       }
+      // 判断返回类型是否是void
       this.returnsVoid = void.class.equals(this.returnType);
+      // 判断返回类型是否是集合类型或者数组类型
       this.returnsMany = configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
+      // 判断返回类型时候是一个游标类型
       this.returnsCursor = Cursor.class.equals(this.returnType);
+      // 判断返回类型是否是Optional,这是jdk1.8中新增加的一个类型
       this.returnsOptional = Optional.class.equals(this.returnType);
+      // 如果返回类型是Map,则判断该方法上有没有MapKey注解,如果有MapKey注解,则提取其中的值
       this.mapKey = getMapKey(method);
+      // 判断返回值是不是一个Map
       this.returnsMap = this.mapKey != null;
+
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+      // 设置参数解析器,比如,在方法上,会添加@Param("xxx") int xxx这种类型的参数.
       this.paramNameResolver = new ParamNameResolver(configuration, method);
     }
 
