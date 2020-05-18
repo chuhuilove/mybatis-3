@@ -36,6 +36,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ *
+ * Mapper方法
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
@@ -43,9 +45,21 @@ import java.util.*;
  */
 public class MapperMethod {
 
+  /**
+   * 包含:
+   * {@linkplain #command}中两个属性,
+   * 当前sql的类型,比如 select,update,insert,
+   * 当前方法的statementId,本方法所在的接口权限定名+"."+本方法名
+   */
   private final SqlCommand command;
   private final MethodSignature method;
 
+  /**
+   * 这个类相当于{@link Method}的包装类
+   * @param mapperInterface {@link Method}所在的接口
+   * @param method {@link Method} 本身
+   * @param config 当前SqlSession中的{@link Configuration}属性
+   */
   public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
     this.command = new SqlCommand(config, mapperInterface, method);
     this.method = new MethodSignature(config, mapperInterface, method);
@@ -221,8 +235,7 @@ public class MapperMethod {
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
       final String methodName = method.getName();
       final Class<?> declaringClass = method.getDeclaringClass();
-      MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
-          configuration);
+      MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,configuration);
       if (ms == null) {
         if(method.getAnnotation(Flush.class) != null){
           name = null;
@@ -248,8 +261,9 @@ public class MapperMethod {
       return type;
     }
 
-    private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
-        Class<?> declaringClass, Configuration configuration) {
+    private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,Class<?> declaringClass, Configuration configuration) {
+
+      // 接口的权限定名+"."+方法名,组成statementId
       String statementId = mapperInterface.getName() + "." + methodName;
       if (configuration.hasStatement(statementId)) {
         return configuration.getMappedStatement(statementId);
@@ -258,8 +272,7 @@ public class MapperMethod {
       }
       for (Class<?> superInterface : mapperInterface.getInterfaces()) {
         if (declaringClass.isAssignableFrom(superInterface)) {
-          MappedStatement ms = resolveMappedStatement(superInterface, methodName,
-              declaringClass, configuration);
+          MappedStatement ms = resolveMappedStatement(superInterface, methodName,declaringClass, configuration);
           if (ms != null) {
             return ms;
           }
@@ -269,6 +282,9 @@ public class MapperMethod {
     }
   }
 
+  /**
+   * 方法签名
+   */
   public static class MethodSignature {
 
     private final boolean returnsMany;

@@ -24,6 +24,7 @@ import org.apache.ibatis.session.SqlSession;
 
 /**
  * 为添加了@Mapper注解的接口动态生成代理类...
+ * 每个接口中的方法的实际执行类是{@link MapperProxy}
  * @author Lasse Voss
  */
 public class MapperProxyFactory<T> {

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -110,7 +110,8 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       classToCreate = ArrayList.class;
     } else if (type == Map.class) {
       classToCreate = HashMap.class;
-    } else if (type == SortedSet.class) { // issue #510 Collections Support
+    } else if (type == SortedSet.class) {
+      // issue #510 Collections Support
       classToCreate = TreeSet.class;
     } else if (type == Set.class) {
       classToCreate = HashSet.class;

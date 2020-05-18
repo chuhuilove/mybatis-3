@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -267,18 +267,6 @@ public abstract class BaseExecutor implements Executor {
     }
   }
 
-  protected abstract int doUpdate(MappedStatement ms, Object parameter)
-      throws SQLException;
-
-  protected abstract List<BatchResult> doFlushStatements(boolean isRollback)
-      throws SQLException;
-
-  protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)
-      throws SQLException;
-
-  protected abstract <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
-      throws SQLException;
-
   protected void closeStatement(Statement statement) {
     if (statement != null) {
       try {
@@ -340,6 +328,20 @@ public abstract class BaseExecutor implements Executor {
       return connection;
     }
   }
+
+
+  protected abstract int doUpdate(MappedStatement ms, Object parameter)
+          throws SQLException;
+
+  protected abstract List<BatchResult> doFlushStatements(boolean isRollback)
+          throws SQLException;
+
+  protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)
+          throws SQLException;
+
+  protected abstract <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
+          throws SQLException;
+
 
   @Override
   public void setExecutorWrapper(Executor wrapper) {

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -162,6 +162,8 @@ public class CachingExecutor implements Executor {
   }
 
   private void flushCacheIfRequired(MappedStatement ms) {
+    // 从缓存中获取数据
+    // 然后判断是否需要清除掉缓存..
     Cache cache = ms.getCache();
     if (cache != null && ms.isFlushCacheRequired()) {
       tcm.clear(cache);

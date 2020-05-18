@@ -76,14 +76,14 @@ public interface Cache {
   Object removeObject(Object key);
 
   /**
-   * Clears this cache instance
+   * 清除缓存实例
    */
   void clear();
 
   /**
-   * Optional. This method is not called by the core.
+   * 可选的.内核不调用此方法.
    *
-   * @return The number of elements stored in the cache (not its capacity).
+   * @return 存储在缓存中的元素数量(而不是其容量).
    */
   int getSize();
 

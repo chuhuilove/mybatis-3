@@ -92,6 +92,8 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey) {
+    //statement: 方法名 com.chuhui.readsource.services.dao.ShopDao.getAllCityInfo.
+   // mapKey: poi_id
     return this.selectMap(statement, parameter, mapKey, RowBounds.DEFAULT);
   }
 
