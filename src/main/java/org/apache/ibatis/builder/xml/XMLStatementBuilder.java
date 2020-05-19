@@ -53,8 +53,14 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  /**
+   * 解析节点,并且生成MappedStatement对象
+   * 这里的{@link #context} 指的是每一条sql语句所在的标签
+   */
   public void parseStatementNode() {
+    // 获取标签中的id属性
     String id = context.getStringAttribute("id");
+    // 获取databaseId属性
     String databaseId = context.getStringAttribute("databaseId");
 
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {

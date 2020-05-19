@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,6 +49,10 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ *
+ * 解析Mapper.xml文件的解析器
+ * 主要解析功能在{@link #parse()}
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -91,7 +95,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
-      configurationElement(parser.evalNode("/mapper"));
+      // 获取mapper.xml的根节点
+      XNode mapperRootNode = parser.evalNode("/mapper");
+      // 从mapperRootNode中解析出各个元素
+      configurationElement(mapperRootNode);
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
     }
@@ -107,16 +114,24 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void configurationElement(XNode context) {
     try {
+      // 解析节点的namespace属性,一般都是接口的全限定名
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
+
+      // 提取缓存标签...
       cacheRefElement(context.evalNode("cache-ref"));
       cacheElement(context.evalNode("cache"));
+
+      // 提取mapper/parameterMap标签
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      // 提取/mapper/resultMap标签
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      // 提取出sql标签,比如:id,name,update_time,del_flag等包装成的sql标签
       sqlElement(context.evalNodes("/mapper/sql"));
+      // 提取出sql语句
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -239,6 +254,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析resultMap标签
+   * @param list
+   * @throws Exception
+   */
   private void resultMapElements(List<XNode> list) throws Exception {
     for (XNode resultMapNode : list) {
       try {
