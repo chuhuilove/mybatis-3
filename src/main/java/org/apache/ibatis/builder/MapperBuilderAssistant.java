@@ -50,6 +50,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * 生成MappedStatement的助理类
  * @author Clinton Begin
  */
 public class MapperBuilderAssistant extends BaseBuilder {

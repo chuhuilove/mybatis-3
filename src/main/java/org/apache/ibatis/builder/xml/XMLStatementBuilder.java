@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -34,6 +34,10 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 这个解析器的主要功能就是解析在mapper.xml中出现的sql语句.
+ * 这个类和mapper.xml文件的关系是多对一的关系,
+ * 因为这个类的一个实例,对应mapper.xml文件中的一条sql语句.
+ * 暴露出来的{@link #parseStatementNode()}方法,在{@link XMLMapperBuilder#buildStatementFromContext(List)}中是循环调用的.
  * @author Clinton Begin
  */
 public class XMLStatementBuilder extends BaseBuilder {
@@ -69,11 +73,16 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     Integer fetchSize = context.getIntAttribute("fetchSize");
     Integer timeout = context.getIntAttribute("timeout");
+    // 获取标签中的parameterMap属性
     String parameterMap = context.getStringAttribute("parameterMap");
+    // 获取标签中的parameterType属性
     String parameterType = context.getStringAttribute("parameterType");
     Class<?> parameterTypeClass = resolveClass(parameterType);
+    // 获取标签中的resultMap属性
     String resultMap = context.getStringAttribute("resultMap");
+    // 获取标签中的resultType属性
     String resultType = context.getStringAttribute("resultType");
+    // 获取标签中的lang属性
     String lang = context.getStringAttribute("lang");
     LanguageDriver langDriver = getLanguageDriver(lang);
 
@@ -84,6 +93,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+    // 判断该sql语句是否是select
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
@@ -112,6 +122,7 @@ public class XMLStatementBuilder extends BaseBuilder {
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
 
+    // 由builderAssistant构建出一个MappedStatement对象,最后存储到Configuration中
     builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
         fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
         resultSetTypeEnum, flushCache, useCache, resultOrdered,

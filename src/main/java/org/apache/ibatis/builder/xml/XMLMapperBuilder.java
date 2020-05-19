@@ -52,7 +52,7 @@ import org.apache.ibatis.type.TypeHandler;
  *
  * 解析Mapper.xml文件的解析器
  * 主要解析功能在{@link #parse()}
- *
+ * 这个类,和mapper.xml文件是一对一的关系
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -61,6 +61,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   private final XPathParser parser;
   private final MapperBuilderAssistant builderAssistant;
   private final Map<String, XNode> sqlFragments;
+  // mapper.xml文件路径
   private final String resource;
 
   @Deprecated

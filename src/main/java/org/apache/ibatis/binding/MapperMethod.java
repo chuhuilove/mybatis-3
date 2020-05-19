@@ -210,7 +210,7 @@ public class MapperMethod {
 
   private <K, V> Map<K, V> executeForMap(SqlSession sqlSession, Object[] args) {
     Map<K, V> result;
-    // 转换参数到sql
+    // 转换参数到sql语句中
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
       RowBounds rowBounds = method.extractRowBounds(args);
