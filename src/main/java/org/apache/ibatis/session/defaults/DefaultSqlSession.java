@@ -104,8 +104,19 @@ public class DefaultSqlSession implements SqlSession {
 
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
 
+
+    /**
+     * configuration.getObjectFactory():{@link org.apache.ibatis.reflection.factory.DefaultObjectFactory}
+     * configuration.getObjectWrapperFactory(): {@link org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory}
+     * configuration.getReflectorFactory(): {@link org.apache.ibatis.reflection.DefaultReflectorFactory}
+     * 返回类型这个扩展机制,该怎么整呢?
+     *
+     * 或者,我需要尝试一下,所有的查询,都是返回一个Map实例对象吗
+     * //todo 这一点需要求证
+     */
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
             configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+
     final DefaultResultContext<V> context = new DefaultResultContext<>();
     for (V o : list) {
       context.nextResultObject(o);

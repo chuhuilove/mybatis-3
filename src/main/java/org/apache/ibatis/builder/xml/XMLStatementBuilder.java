@@ -37,7 +37,8 @@ import org.apache.ibatis.session.Configuration;
  * 这个解析器的主要功能就是解析在mapper.xml中出现的sql语句.
  * 这个类和mapper.xml文件的关系是多对一的关系,
  * 因为这个类的一个实例,对应mapper.xml文件中的一条sql语句.
- * 暴露出来的{@link #parseStatementNode()}方法,在{@link XMLMapperBuilder#buildStatementFromContext(List)}中是循环调用的.
+ * 暴露出来的{@link #parseStatementNode()}方法,
+ * 在{@link XMLMapperBuilder#buildStatementFromContext(List)}中是循环调用的.
  * @author Clinton Begin
  */
 public class XMLStatementBuilder extends BaseBuilder {

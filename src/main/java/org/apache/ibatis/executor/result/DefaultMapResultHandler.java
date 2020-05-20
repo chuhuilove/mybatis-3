@@ -25,6 +25,8 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
 /**
+ * 结果处理器.
+ * 返回结果类型是{@link Map}类型,在这里进行处理
  * @author Clinton Begin
  */
 public class DefaultMapResultHandler<K, V> implements ResultHandler<V> {

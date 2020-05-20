@@ -63,6 +63,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     // 真正调用jdbc执行sql语句
     PreparedStatement ps = (PreparedStatement) statement;
     ps.execute();
+    // 返回的结果已经是具体的实际类了
     return resultSetHandler.handleResultSets(ps);
   }
 

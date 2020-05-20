@@ -329,6 +329,9 @@ public class MapperMethod {
       // 如果返回类型是Map,则判断该方法上有没有MapKey注解,如果有MapKey注解,则提取其中的值
       this.mapKey = getMapKey(method);
       // 判断返回值是不是一个Map
+      // 如果没有在方法上添加MapKey注解,
+      // 则无论方法的返回值是什么,
+      // //都不认为这个方法返回的是map类型
       this.returnsMap = this.mapKey != null;
 
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);

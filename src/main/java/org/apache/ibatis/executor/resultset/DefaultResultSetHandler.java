@@ -72,7 +72,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private static final Object DEFERRED = new Object();
 
+  /**
+   * 具体的执行器
+   */
   private final Executor executor;
+  /**
+   * 全局的{@link }
+   */
   private final Configuration configuration;
   private final MappedStatement mappedStatement;
   private final RowBounds rowBounds;
@@ -177,6 +183,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   //
   // HANDLE RESULT SETS
   //
+
+  /**
+   * 处理结果集
+   * @param stmt
+   * @return
+   * @throws SQLException
+   */
   @Override
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());

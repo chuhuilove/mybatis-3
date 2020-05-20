@@ -36,19 +36,41 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
+ * 结果集包装器
  * @author Iwao AVE!
  */
 public class ResultSetWrapper {
 
+  /**
+   * 实际的结果集
+   */
   private final ResultSet resultSet;
+  /**
+   * 类型处理注册器
+   */
   private final TypeHandlerRegistry typeHandlerRegistry;
+  /**
+   * 查询结果,列的名称
+   */
   private final List<String> columnNames = new ArrayList<>();
+  /**
+   * 查询结果,列的类型名
+   */
   private final List<String> classNames = new ArrayList<>();
+  /**
+   * 查询结果,列的jdbc类型
+   */
   private final List<JdbcType> jdbcTypes = new ArrayList<>();
   private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<>();
   private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<>();
   private final Map<String, List<String>> unMappedColumnNamesMap = new HashMap<>();
 
+  /**
+   * 创建结果集包装器
+   * @param rs 结果集
+   * @param configuration 全局的那个{@link Configuration}对象
+   * @throws SQLException
+   */
   public ResultSetWrapper(ResultSet rs, Configuration configuration) throws SQLException {
     super();
     this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
