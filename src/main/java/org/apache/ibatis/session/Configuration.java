@@ -164,6 +164,11 @@ public class Configuration {
       .conflictMessageProducer((savedValue, targetValue) ->
           ". please check " + savedValue.getResource() + " and " + targetValue.getResource());
   protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
+  /**
+   * 用来存储所有mapper.xml文件中,
+   * 每个select|update|insert|delete标签中的resultMap属性
+   * 存储的值是:当前mapper.xml中的namespace属性+"."+resultMap
+   */
   protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");

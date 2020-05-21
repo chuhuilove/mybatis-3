@@ -26,7 +26,8 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
- * 用来描述 Mapper.xml中的resultMap标签中的内容
+ * 用来描述 Mapper.xml中的resultMap标签内的标签,
+ * 比如:constructor?,id*,result*,association*,collection*, discriminator这些标签
  * @author Clinton Begin
  */
 public class ResultMapping {

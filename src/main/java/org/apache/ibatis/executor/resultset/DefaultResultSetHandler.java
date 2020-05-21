@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -77,12 +77,15 @@ public class DefaultResultSetHandler implements ResultSetHandler {
    */
   private final Executor executor;
   /**
-   * 全局的{@link }
+   * 全局的{@link Configuration}
    */
   private final Configuration configuration;
   private final MappedStatement mappedStatement;
   private final RowBounds rowBounds;
   private final ParameterHandler parameterHandler;
+  /**
+   * 结果处理器
+   */
   private final ResultHandler<?> resultHandler;
   private final BoundSql boundSql;
   private final TypeHandlerRegistry typeHandlerRegistry;
@@ -197,9 +200,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
+    /**
+     * 包装一下结果集,执行结果的列属性,如列名,列类型,列的jdbc类型
+     */
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
+
     int resultMapCount = resultMaps.size();
     validateResultMapsCount(rsw, resultMapCount);
     while (rsw != null && resultMapCount > resultSetCount) {
@@ -304,6 +311,14 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
+  /**
+   * 查询结果转换
+   * @param rsw 查询结果包装器
+   * @param resultMap 需要包装成的类
+   * @param multipleResults
+   * @param parentMapping
+   * @throws SQLException
+   */
   private void handleResultSet(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults, ResultMapping parentMapping) throws SQLException {
     try {
       if (parentMapping != null) {
@@ -360,7 +375,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping)
       throws SQLException {
     DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
+    // 把执行结果获取出来,这是jdbc层面的操作
     ResultSet resultSet = rsw.getResultSet();
+    // 跳过几条结果
     skipRows(resultSet, rowBounds);
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
@@ -597,10 +614,20 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   // INSTANTIATION & CONSTRUCTOR MAPPING
   //
 
+  /**
+   * 创建一个结果对象...并没有填充属性,只是一个空对象
+   * @param rsw
+   * @param resultMap
+   * @param lazyLoader
+   * @param columnPrefix
+   * @return
+   * @throws SQLException
+   */
   private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, ResultLoaderMap lazyLoader, String columnPrefix) throws SQLException {
     this.useConstructorMappings = false; // reset previous mapping result
     final List<Class<?>> constructorArgTypes = new ArrayList<>();
     final List<Object> constructorArgs = new ArrayList<>();
+    // 根据resultMap中里面的类型,创建一个空对象
     Object resultObject = createResultObject(rsw, resultMap, constructorArgTypes, constructorArgs, columnPrefix);
     if (resultObject != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
       final List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();

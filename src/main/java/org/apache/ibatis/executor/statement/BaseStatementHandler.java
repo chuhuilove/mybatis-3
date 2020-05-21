@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2016 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected final ObjectFactory objectFactory;
   protected final TypeHandlerRegistry typeHandlerRegistry;
   /**
-   * 结果集处理器
+   * sql语句执行结果处理器
    */
   protected final ResultSetHandler resultSetHandler;
   protected final ParameterHandler parameterHandler;

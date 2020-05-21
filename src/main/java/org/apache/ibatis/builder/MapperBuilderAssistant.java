@@ -86,17 +86,23 @@ public class MapperBuilderAssistant extends BaseBuilder {
     this.currentNamespace = currentNamespace;
   }
 
+  /**
+   * 应用当前命名空间
+   * @param base
+   * @param isReference
+   * @return
+   */
   public String applyCurrentNamespace(String base, boolean isReference) {
     if (base == null) {
       return null;
     }
     if (isReference) {
-      // is it qualified with any namespace yet?
+      // 它是否具有任何名称空间?
       if (base.contains(".")) {
         return base;
       }
     } else {
-      // is it qualified with this namespace yet?
+      // 它是否已经通过这个名称空间进行了限定?
       if (base.startsWith(currentNamespace + ".")) {
         return base;
       }
@@ -177,6 +183,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .build();
   }
 
+  /**
+   * 将resultMap下面的子标签,添加到{@link Configuration}对象中
+   * @param id
+   * @param type
+   * @param extend
+   * @param discriminator
+   * @param resultMappings
+   * @param autoMapping
+   * @return
+   */
   public ResultMap addResultMap(
       String id,
       Class<?> type,
@@ -334,10 +350,23 @@ public class MapperBuilderAssistant extends BaseBuilder {
     return parameterMap;
   }
 
+  /**
+   *
+   * @param resultMap sql语句所在标签中的resultMap属性
+   * @param resultType sql语句所在标签中的resultType属性
+   * @param statementId sql语句所在标签中的id属性,也就是和接口中方法名称相同的那个字符串
+   * @return
+   */
   private List<ResultMap> getStatementResultMaps(
       String resultMap,
       Class<?> resultType,
       String statementId) {
+
+    /**
+     * 一半情况下,resultMap的名称都叫BaseResultMap,通过生成器生成的
+     * 现在又应用了当前命名空间,所以.
+     * 执行之后,就变成了com.chuhui.readsource.services.dao.VehiclePopularCityInfoDao.BaseResultMap
+     */
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
@@ -362,6 +391,24 @@ public class MapperBuilderAssistant extends BaseBuilder {
     return resultMaps;
   }
 
+  /**
+   * 构建resultMap下面的子标签,比如id,result,association,collection这几个标签
+   * @param resultType
+   * @param property
+   * @param column
+   * @param javaType
+   * @param jdbcType
+   * @param nestedSelect
+   * @param nestedResultMap
+   * @param notNullColumn
+   * @param columnPrefix
+   * @param typeHandler
+   * @param flags
+   * @param resultSet
+   * @param foreignColumn
+   * @param lazy
+   * @return
+   */
   public ResultMapping buildResultMapping(
       Class<?> resultType,
       String property,

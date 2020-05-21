@@ -274,16 +274,28 @@ public class XMLMapperBuilder extends BaseBuilder {
     return resultMapElement(resultMapNode, Collections.<ResultMapping> emptyList(), null);
   }
 
+  /**
+   * 解析mapper.xml中的resultMap标签
+   * @param resultMapNode
+   * @param additionalResultMappings
+   * @param enclosingType
+   * @return
+   * @throws Exception
+   */
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
-    String id = resultMapNode.getStringAttribute("id",
-        resultMapNode.getValueBasedIdentifier());
+    // 获取标签中的id属性
+    String id = resultMapNode.getStringAttribute("id",resultMapNode.getValueBasedIdentifier());
+    // 获取标签中的type属性,也就是这个resultMap所对应的类的全类名
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
+    // 获取标签中的extends标签
     String extend = resultMapNode.getStringAttribute("extends");
+    // 获取标签中的autoMapping属性
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
+    // 从获取到的type属性,解析成Class
     Class<?> typeClass = resolveClass(type);
     if (typeClass == null) {
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
@@ -291,13 +303,20 @@ public class XMLMapperBuilder extends BaseBuilder {
     Discriminator discriminator = null;
     List<ResultMapping> resultMappings = new ArrayList<>();
     resultMappings.addAll(additionalResultMappings);
+    /**
+     * 开始解析resultMap标签中的子标签
+     */
     List<XNode> resultChildren = resultMapNode.getChildren();
     for (XNode resultChild : resultChildren) {
+
       if ("constructor".equals(resultChild.getName())) {
+        // 解析constructor标签
         processConstructorElement(resultChild, typeClass, resultMappings);
       } else if ("discriminator".equals(resultChild.getName())) {
+        // 解析discriminator标签
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
       } else {
+        // 解析id,result,association,collection标签
         List<ResultFlag> flags = new ArrayList<>();
         if ("id".equals(resultChild.getName())) {
           flags.add(ResultFlag.ID);
@@ -394,7 +413,25 @@ public class XMLMapperBuilder extends BaseBuilder {
     return true;
   }
 
+  /**
+   * 解析 resultMap下面的id,result,association,collection这几个子标签
+   * @param context
+   * @param resultType
+   * @param flags
+   * @return
+   * @throws Exception
+   */
   private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) throws Exception {
+
+    /**
+     * 需要解析的子标签,分别有下面几个属性
+     * id: property,javaType,column,jdbcType,typeHandler
+     * result: property,javaType,column,jdbcType,typeHandler
+     * association: property,column,javaType,jdbcType,select,resultMap,typeHandler,notNullColumn,columnPrefix,resultSet,foreignColumn,autoMapping,fetchType
+     * collection: property,column,javaType,ofType,jdbcType,select,resultMap,typeHandler,notNullColumn,columnPrefix,resultSet,foreignColumn,autoMapping,fetchType
+     * 都会在这里进行解析
+     */
+
     String property;
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
       property = context.getStringAttribute("name");

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
- * 结果集包装器
+ * 结果集包装器,提取出执行结果中的列的属性,如名称,类型,jdbc类型
  * @author Iwao AVE!
  */
 public class ResultSetWrapper {
