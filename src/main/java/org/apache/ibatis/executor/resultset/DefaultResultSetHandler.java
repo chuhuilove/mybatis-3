@@ -77,7 +77,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
    */
   private final Executor executor;
   /**
-   * 全局的{@link Configuration}
    */
   private final Configuration configuration;
   private final MappedStatement mappedStatement;
@@ -90,6 +89,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private final BoundSql boundSql;
   private final TypeHandlerRegistry typeHandlerRegistry;
   private final ObjectFactory objectFactory;
+  /**
+   * 反射工厂
+   */
   private final ReflectorFactory reflectorFactory;
 
   // nested resultmaps
@@ -424,7 +426,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
     final ResultLoaderMap lazyLoader = new ResultLoaderMap();
+
+    // 创建一个新的目标对象,但是没有设置任何属性
     Object rowValue = createResultObject(rsw, resultMap, lazyLoader, columnPrefix);
+
+
     if (rowValue != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
       final MetaObject metaObject = configuration.newMetaObject(rowValue);
       boolean foundValues = this.useConstructorMappings;
@@ -623,18 +629,27 @@ public class DefaultResultSetHandler implements ResultSetHandler {
    * @return
    * @throws SQLException
    */
-  private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, ResultLoaderMap lazyLoader, String columnPrefix) throws SQLException {
+    private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, ResultLoaderMap lazyLoader, String columnPrefix) throws SQLException {
     this.useConstructorMappings = false; // reset previous mapping result
+
     final List<Class<?>> constructorArgTypes = new ArrayList<>();
+
     final List<Object> constructorArgs = new ArrayList<>();
+
     // 根据resultMap中里面的类型,创建一个空对象
     Object resultObject = createResultObject(rsw, resultMap, constructorArgTypes, constructorArgs, columnPrefix);
+
     if (resultObject != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
+
       final List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();
+
       for (ResultMapping propertyMapping : propertyMappings) {
+
         // issue gcode #109 && issue #149
         if (propertyMapping.getNestedQueryId() != null && propertyMapping.isLazy()) {
+
           resultObject = configuration.getProxyFactory().createProxy(resultObject, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
+
           break;
         }
       }
@@ -643,19 +658,40 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     return resultObject;
   }
 
+  /**
+   * 创建结果对象
+   * @param rsw
+   * @param resultMap
+   * @param constructorArgTypes
+   * @param constructorArgs
+   * @param columnPrefix
+   * @return
+   * @throws SQLException
+   */
   private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, List<Class<?>> constructorArgTypes, List<Object> constructorArgs, String columnPrefix)
       throws SQLException {
     final Class<?> resultType = resultMap.getType();
+
     final MetaClass metaType = MetaClass.forClass(resultType, reflectorFactory);
+
     final List<ResultMapping> constructorMappings = resultMap.getConstructorResultMappings();
+
     if (hasTypeHandlerForResultObject(rsw, resultType)) {
+
       return createPrimitiveResultObject(rsw, resultMap, columnPrefix);
+
     } else if (!constructorMappings.isEmpty()) {
+
       return createParameterizedResultObject(rsw, resultType, constructorMappings, constructorArgTypes, constructorArgs, columnPrefix);
+
     } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
+
       return objectFactory.create(resultType);
+
     } else if (shouldApplyAutomaticMappings(resultMap, false)) {
+
       return createByConstructorSignature(rsw, resultType, constructorArgTypes, constructorArgs, columnPrefix);
+
     }
     throw new ExecutorException("Do not know how to create an instance of " + resultType);
   }
