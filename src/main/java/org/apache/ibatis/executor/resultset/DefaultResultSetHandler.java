@@ -17,12 +17,14 @@ package org.apache.ibatis.executor.resultset;
 
 import org.apache.ibatis.annotations.AutomapConstructor;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.cursor.defaults.DefaultCursor;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
+import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.loader.ResultLoader;
 import org.apache.ibatis.executor.loader.ResultLoaderMap;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
@@ -36,10 +38,15 @@ import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.mapping.ResultSetType;
+import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.mapping.SqlSource;
+import org.apache.ibatis.mapping.StatementType;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.AutoMappingBehavior;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultContext;
@@ -87,6 +94,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
    */
   private final ResultHandler<?> resultHandler;
   private final BoundSql boundSql;
+  /**
+   * 类型处理器,里面设置了n多类型处理器
+   */
   private final TypeHandlerRegistry typeHandlerRegistry;
   private final ObjectFactory objectFactory;
   /**
@@ -128,18 +138,35 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
+  /**
+   * 初始化默认结果集处理器
+   * @param executor sql执行器
+   * @param mappedStatement
+   * @param parameterHandler
+   * @param resultHandler
+   * @param boundSql
+   * @param rowBounds
+   */
   public DefaultResultSetHandler(Executor executor, MappedStatement mappedStatement, ParameterHandler parameterHandler, ResultHandler<?> resultHandler, BoundSql boundSql,
                                  RowBounds rowBounds) {
+    // CachingExecutor
     this.executor = executor;
     this.configuration = mappedStatement.getConfiguration();
     this.mappedStatement = mappedStatement;
     this.rowBounds = rowBounds;
     this.parameterHandler = parameterHandler;
+    // sql包装器
     this.boundSql = boundSql;
     this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+    // DefaultObjectFactory
     this.objectFactory = configuration.getObjectFactory();
+    // DefaultReflectorFactory
     this.reflectorFactory = configuration.getReflectorFactory();
     this.resultHandler = resultHandler;
+    // 下面打断点
+    int a=0;
+    int b=0;
+    int c=a+b;
   }
 
   //
@@ -191,7 +218,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   /**
    * 处理结果集
-   * @param stmt
+   * @param stmt 在已经执行过查询之后,
+   *             需要将查询的结果进行包装,进行解析,解析成具体的对象
    * @return
    * @throws SQLException
    */
@@ -207,12 +235,28 @@ public class DefaultResultSetHandler implements ResultSetHandler {
      */
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
+    //
+    /**
+     * 返回ResultMap,这个值在解析sql语句的时候,就已经进行赋值了.
+     * 具体在{@link MapperBuilderAssistant#addMappedStatement}
+     * 中进行设置的.
+     * 但是一般情况下,每个具体的sql语句标签,只会设置一个resultMap,
+     * 为什么会用list类保存呢.
+     * 好像sql语句标签中的resultMap可以以","分隔,然后设置n多个值.
+     * 没搞明白.怎么整.
+     */
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
-
     int resultMapCount = resultMaps.size();
     validateResultMapsCount(rsw, resultMapCount);
+
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
+
+      /**
+       * rsw: 代表的是执行的结果集,只不过用ResultSetWrapper包装了一下
+       * resultMap: 结果集的需要转换的对象类型
+       * multipleResults: 转换后的结果,存储在这里
+       */
       handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt);
       cleanUpAfterHandlingResultSet();
@@ -317,7 +361,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
    * 查询结果转换
    * @param rsw 查询结果包装器
    * @param resultMap 需要包装成的类
-   * @param multipleResults
+   * @param multipleResults 包装的结果,存储到这里
    * @param parentMapping
    * @throws SQLException
    */
@@ -326,11 +370,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       if (parentMapping != null) {
         handleRowValues(rsw, resultMap, null, RowBounds.DEFAULT, parentMapping);
       } else {
+        // 默认的处理方式
         if (resultHandler == null) {
           DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
           handleRowValues(rsw, resultMap, defaultResultHandler, rowBounds, null);
           multipleResults.add(defaultResultHandler.getResultList());
         } else {
+          // 这里应该是一个扩展点,可以设置自己的结果处理器
           handleRowValues(rsw, resultMap, resultHandler, rowBounds, null);
         }
       }
@@ -349,6 +395,15 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   // HANDLE ROWS FOR SIMPLE RESULTMAP
   //
 
+  /**
+   *
+   * @param rsw
+   * @param resultMap
+   * @param resultHandler
+   * @param rowBounds
+   * @param parentMapping
+   * @throws SQLException
+   */
   public void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
     if (resultMap.hasNestedResultMaps()) {
       ensureNoRowBounds();
@@ -359,6 +414,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
+  /**
+   * 确保没有行界限
+   */
   private void ensureNoRowBounds() {
     if (configuration.isSafeRowBoundsEnabled() && rowBounds != null && (rowBounds.getLimit() < RowBounds.NO_ROW_LIMIT || rowBounds.getOffset() > RowBounds.NO_ROW_OFFSET)) {
       throw new ExecutorException("Mapped Statements with nested result mappings cannot be safely constrained by RowBounds. "
@@ -427,7 +485,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap, String columnPrefix) throws SQLException {
     final ResultLoaderMap lazyLoader = new ResultLoaderMap();
 
-    // 创建一个新的目标对象,但是没有设置任何属性
+    // 创建一个新的目标对象,但是没有填充任何属性
     Object rowValue = createResultObject(rsw, resultMap, lazyLoader, columnPrefix);
 
 
@@ -754,7 +812,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private Constructor<?> findDefaultConstructor(final Constructor<?>[] constructors) {
-    if (constructors.length == 1) return constructors[0];
+    if (constructors.length == 1) {
+      return constructors[0];
+    }
 
     for (final Constructor<?> constructor : constructors) {
       if (constructor.isAnnotationPresent(AutomapConstructor.class)) {
@@ -766,7 +826,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private boolean allowedConstructorUsingTypeHandlers(final Constructor<?> constructor, final List<JdbcType> jdbcTypes) {
     final Class<?>[] parameterTypes = constructor.getParameterTypes();
-    if (parameterTypes.length != jdbcTypes.size()) return false;
+    if (parameterTypes.length != jdbcTypes.size()) {
+      return false;
+    }
     for (int i = 0; i < parameterTypes.length; i++) {
       if (!typeHandlerRegistry.hasTypeHandler(parameterTypes[i], jdbcTypes.get(i))) {
         return false;

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import org.apache.ibatis.binding.MapperRegistry;
@@ -104,7 +105,15 @@ public class Configuration {
 
   protected Environment environment;
 
+  /**
+   * 是否允许在嵌套语句中使用分页(RowBounds).
+   * 如果允许使用则设置为{@code false}.
+   */
   protected boolean safeRowBoundsEnabled;
+  /**
+   * 否允许在嵌套语句中使用结果处理器(ResultHandler).
+   * 如果允许使用则设置为{@code false}.
+   */
   protected boolean safeResultHandlerEnabled = true;
   protected boolean mapUnderscoreToCamelCase;
   protected boolean aggressiveLazyLoading;
@@ -135,7 +144,21 @@ public class Configuration {
   protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
 
   protected Properties variables = new Properties();
+  /**
+   * 顾名思义,反射工厂,
+   * 这个反射工厂默认的实现是{@link DefaultReflectorFactory}
+   * 里面维护了一个{@link ConcurrentHashMap},
+   * {@link ReflectorFactory#findForClass(Class)}返回的要么是
+   * 缓存的{@link org.apache.ibatis.reflection.Reflector}对象,
+   * 要么是直接创建的{@link org.apache.ibatis.reflection.Reflector}对象.
+   */
   protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+  /**
+   * 顾名思义,这是一个对象工厂.
+   * {@link DefaultObjectFactory},最重要的功能还是创建对象,
+   * 1. 通过类型调用无参构造函数,来创建对象实例,
+   * 2. 通过类型和构造函数的参数类型+构造函数的参数值来创建对象实例
+   */
   protected ObjectFactory objectFactory = new DefaultObjectFactory();
   protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
